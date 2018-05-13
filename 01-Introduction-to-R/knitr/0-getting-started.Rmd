@@ -62,7 +62,8 @@ We will touch on all of these aspects.
 Slides and material are available at
  http://heike.github.io/summerschool-2018
 
-#  http://heike.github.io/summerschool-2018
+
+#  http://heike.github.io/<br>summerschool-2018
 
 ## Installing R
 
