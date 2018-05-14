@@ -1,7 +1,7 @@
 ---
 title: "Introduction to R - Hello woRld"
 subtitle: "Midwest Big Data Summer School"
-author: "Heike Hofmann (hofmann@iastate.edu, @heike_hh)"
+author: "Heike Hofmann (hofmann@iastate.edu, @heike_hh), Ganesh Krishnan"
 date: "`r Sys.Date()`"
 output:
   ioslides_presentation:
