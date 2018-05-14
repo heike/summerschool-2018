@@ -1,0 +1,116 @@
+---
+title: "Your Turn Solutions"
+author: "Heike Hofmann"
+date: "May, 2018"
+output: html_document
+---
+
+## Graphics Intro
+
+Load the BRFSS subset for Iowa in 2012
+
+```{r}
+iowa <- read.csv("https://raw.githubusercontent.com/heike/summerschool-2018/master/02-graphics/data/brfss-iowa-2012.csv")
+```
+
+1. Use `qplot` to build a scatterplot of variables `WTKG3` (weight in kg) and `HTIN4` (height in inch)
+
+```{r}
+library(ggplot2)
+qplot(data = iowa, x = HTIN4, y = WTKG3)
+
+# use some alpha blending to alleviate over-plotting
+qplot(data = iowa, x = HTIN4, y = WTKG3, alpha = I(0.5))
+
+# Generally there is a positive relationship, but it's not very strong, and there are lots of outliers on the upper end of the weight.
+# The stripes come from height being reported in inch. We can use jittering to add some random noise
+
+qplot(data = iowa, x = HTIN4, y = WTKG3, alpha = I(0.5), geom="jitter")
+
+```
+2. Use options within `qplot` to color points by a person's gender (`SEX`)
+
+```{r}
+qplot(data = iowa, x = HTIN4, y = WTKG3/100, colour = SEX)
+
+# the colour is strange - let's change the SEX variable to a factor permanently:
+iowa$SEX <- factor(iowa$SEX)
+
+qplot(data=iowa, x = HTIN4, y = WTKG3, colour = SEX)
+```
+
+3. Clean up axis labels and add main plot title
+
+```{r}
+qplot(data = iowa, x = HTIN4, y = WTKG3, colour = SEX) +
+  ggtitle("Relationship of weight and height among the Iowa population in 2012") +
+  xlab("Height in inch") +
+  ylab("Weight in kg")
+```
+
+## boxplots
+
+1. Create a new variable in the brfss data calculating bmi: bmi = (weight in kg)^2 / height in cm
+
+```{r}
+iowa$bmi <- (iowa$WTKG3/100)/(iowa$HTIN4*2.54/100)^2
+summary(iowa$bmi)
+```
+2. Use qplot to create a histogram of bmi
+```{r}
+qplot(data = iowa, x = bmi, geom="histogram") 
+```
+
+3. Change the bin width on that histogram to 0.5
+
+```{r}
+qplot(data = iowa, x = bmi, geom="histogram", binwidth=1) 
+```
+
+4. Facet this histogram by gender
+
+```{r}
+qplot(data = iowa, x = bmi, geom="histogram", facets = SEX~.)
+```
+
+## Binge Drinking
+
+1. The variable `DRNK3GE5` captures the number of times in the last 30 days that respondents binge drank. Draw side-by-side boxplots of  `DRNK3GE5` for genders (`SEX`).
+
+```{r}
+qplot(data = iowa, x = SEX, y = DRNK3GE5, geom="boxplot") 
+```
+
+2. It turns out that values 88, 99 and 77 have special meaning: 88 stands for "none", 99 is "refused to answer" and 77 is "not sure". Exclude these values from the boxplot.
+
+```{r}
+qplot(data = subset(iowa, DRNK3GE5<77), x = SEX, y = DRNK3GE5, geom="boxplot") 
+```
+
+3. Overlay jittered points for observed values onto this boxplot
+
+```{r}
+qplot(data = subset(iowa, DRNK3GE5<77), x = SEX, y = DRNK3GE5, geom="boxplot") +
+  geom_jitter()
+```
+
+## Seatbelt use
+
+1. Use the brfss data to make a barplot for counts of seatbelt use (SEATBELT).
+*Seatbelt use (SEATBELT) is captured as 1 - Always, 2- Nearly Always, 3-Sometimes, 4- Seldom, 5-Never, 7-Don't know, 8-Never drive or ride in a car, 9-Refused, to BLANK-Missing.*
+
+```{r}
+qplot(data = iowa, x = SEATBELT, geom="bar")
+qplot(data = iowa, x = factor(SEATBELT), geom="bar")
+```
+
+2. Facet seatbelt use by gender - are there gender differences in usage?
+
+```{r}
+qplot(data = iowa, x = factor(SEATBELT), geom="bar", facets=~SEX)
+# proportion of women always using a seatbelt is higher than proportion of men.
+qplot(data = iowa, x = factor(SEATBELT), geom="bar", fill=factor(SEX))
+
+qplot(data = iowa, x = SEX, geom="bar", fill=SEATBELT==1)
+
+```

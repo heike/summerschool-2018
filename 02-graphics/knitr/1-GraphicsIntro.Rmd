@@ -1,0 +1,241 @@
+---
+title: "Basic Plots in ggplot2"
+subtitle: "Midwest Big Data Summer School"
+author: "Heike Hofmann (hofmann@iastate.edu, @heike_hh)"
+date: "`r Sys.Date()`"
+output:
+  ioslides_presentation:
+    transition: default
+    widescreen: true
+css:
+  styles.css
+---
+
+```{r, echo=FALSE}
+library(ggplot2)
+```
+
+## Let's Run the Setup File...
+
+Copy and paste the code below into your console. Run the code in the file that opens.
+
+```{r, eval = FALSE}
+curl::curl_download(
+  "https://raw.githubusercontent.com/heike/summerschool-2018/master/02-graphics/code/0-Setup.R",
+  "0-Setup.R"
+)
+file.edit("0-Setup.R")
+```
+
+You should see a plot appear if setup is successful.
+
+
+## ggplot2 in a nutshell
+
+- Wildly popular package for statistical graphics: by now about 400k monthly downloads from CRAN ( more than 10k times per day)
+
+```{r, echo=FALSE}
+library("dlstats")
+
+dframe <- cran_stats("ggplot2")
+ggplot(data = dframe[-nrow(dframe),], aes(x = end, y = downloads)) + geom_point() + geom_line() +
+  ylab("Number of monthly downloads") + xlab("Date") +
+  ggtitle("Number of monthly downloads of ggplot2")
+```
+
+## More on ggplot2
+
+- Developed by Hadley Wickham (An ISU Alumni)
+- Designed to adhere to good graphical practices
+- Supports a wide variety plot types
+- Constructs plots using the concept of layers\medskip
+- http://ggplot2.org/book/ or Hadley's book *ggplot2: Elegant Graphics for Data Analysis* for reference material
+
+## *qplot* Function
+
+The *qplot()* function is the basic workhorse of ggplot2
+
+- Produces all plot types available with ggplot2
+- Allows for plotting options within the function statement
+- Creates an object that can be saved
+- Plot layers can be added to modify plot complexity
+
+## *qplot* Structure
+
+The *qplot()* function has a basic syntax:
+
+*qplot(variables, plot type, dataset, options)*
+
+- variables: list of variables used for the plot
+- plot type: specified with a *geom =* statement
+- dataset: specified with a *data =* statement
+- options: there are so, so many options!
+
+## Diamonds Data
+
+We will explore the diamonds data set (preloaded along with ggplot2) using qplot for basic plotting.
+
+The data set was scraped from a diamond exchange company data base by Hadley.  It contains the prices and attributes of over 50,000 diamonds
+
+## Examining the Diamonds Data
+
+What does the data look like?
+
+Lets look at the top few rows of the diamond data frame to find out!
+
+```{r}
+head(diamonds)
+```
+
+## Basic Scatterplot
+
+Basic scatter plot of diamond price vs carat weight
+
+```{r, fig.height=4, fig.width=7}
+qplot(carat, price, geom = "point", data = diamonds)
+```
+
+## Basic Scatterplot (2)
+
+Using alpha-blending helps with the overplotting
+
+```{r, fig.height=4, fig.width=7}
+qplot(carat, price, geom = "point", data = diamonds, alpha = I(0.05))
+```
+
+## Basic Scatterplot (3)
+
+log-transformation and color
+
+```{r, fig.height=3, fig.width=7}
+qplot(log(carat), log(price), geom = "point", data = diamonds, 
+	colour = color, 
+	main = "Log price by carat weight, grouped by color") + 
+    xlab("Log Carat Weight") + ylab("Log Price")
+```
+
+
+## Your Turn {data-background=#2a374c}
+
+The Behavioral Risk Factor Surveillance System (BRFSS) is an annual survey provided by the Center for Disease Control (CDC) to assess behavioral and chronic diseases. The center surveys six individual-level behavioral health risk factors associated with the leading causes of premature mortality and morbidity among adults: 1) cigarette smoking, 2) alcohol use, 3) physical activity, 4) diet, 5) hypertension, and 6) safety belt use. 
+
+A subset of the data concentrating on Iowa with records for 2012 is given at [https://raw.githubusercontent.com/heike/summerschool-2018/master/02-graphics/data/iowa-brfss-2012.csv]()
+
+A codebook describing the survey and a listing of all variables is available at [http://www.cdc.gov/brfss/annual_data/2012/pdf/CODEBOOK12_LLCP.pdf]().
+
+## Your Turn {data-background=#2a374c}
+
+```{r}
+iowa <- read.csv("https://raw.githubusercontent.com/heike/summerschool-2018/master/02-graphics/data/brfss-iowa-2012.csv")
+```
+
+1. Use `qplot` to build a scatterplot of variables `WTKG3` (weight in kg) and `HTIN4` (height in inch)
+2. Use options within `qplot` to color points by a person's gender (`SEX`)
+3. Clean up axis labels and add main plot title
+
+## Basic Histogram
+
+Basic histogram of price
+
+```{r, fig.height=4, fig.width=7}
+qplot(price, geom = "histogram", data = diamonds)
+```
+
+## Why setting the bin width is useful
+
+Histogram of price, binwidth is set to $50 
+
+```{r, fig.height=4, fig.width=7}
+qplot(price, geom = "histogram",  binwidth = 50, data = diamonds)
+```
+
+The gap in prices at around $2000 is due to the scraping procedure.
+
+## Another Histogram
+
+Price histograms faceted by clarity
+
+```{r, fig.height=4, fig.width=7}
+qplot(price, geom = "histogram", data = diamonds, binwidth = 100, facets = .~clarity)
+```
+
+## Your Turn {data-background=#2a374c}
+
+1. Create a new variable in the brfss data calculating bmi: bmi = (weight in kg) / (height in m)^2
+2. Use qplot to create a histogram of bmi
+3. Change the bin width on that histogram to 1
+4. Facet this histogram by gender
+
+## Basic Boxplot
+
+Side by side boxplot of diamond prices within clarity groupings
+
+```{r, fig.height=4, fig.width=7}
+qplot(clarity, log(price), geom = "boxplot", data = diamonds)
+```
+Why does price decrease as the quality of the diamonds increases?
+
+## Another Boxplot
+
+Side by side boxplot of log prices within clarity groupings with jittered values overlay
+
+```{r, fig.height=3, fig.width=7}
+qplot(clarity, log(price), geom = "boxplot", data = diamonds, 
+	main = "Boxplots of log Diamond Prices Grouped by Clarity") +
+	geom_jitter(alpha = I(.025))
+```
+There are two groups of prices ... maybe related to size?
+
+## Another Boxplot
+
+Side by side boxplot of log prices within clarity groupings 
+
+```{r, fig.height=4, fig.width=7}
+qplot(clarity, log(price)/carat, geom = "boxplot", data = diamonds)
+```
+
+
+
+## Your Turn {data-background=#2a374c}
+
+Binge drinking - is defined as 5 or more alcoholic drinks
+for men or 4 or more drinks for women on one occasion.
+
+1. The variable `DRNK3GE5` captures the number of times in the last 30 days that respondents binge drank. Draw side-by-side boxplots of  `DRNK3GE5` for genders (`SEX`).
+2. It turns out that values 88, 99 and 77 have special meaning: 88 stands for "none", 99 is "refused to answer" and 77 is "not sure". Exclude these values from the boxplot.
+2. Overlay jittered points for observed values onto this boxplot
+
+## Bar Plots
+
+To investigate bar plots we will switch over to the Titanic data set:
+
+```{r}
+titanic <- as.data.frame(Titanic)
+```
+
+Data includes passenger characteristics and survival outcomes for those aboard the RMS Titanic's ill fated maiden voyage
+
+## Basic Bar Plot
+
+Basic bar plot of survival outcomes
+
+```{r, fig.height=4, fig.width=7}
+qplot(Survived, geom = "bar", data = titanic, weight = Freq)
+```
+
+## Another Bar Plot
+
+Bar plot faceted by gender and class
+
+```{r, fig.height=4, fig.width=7}
+qplot(Survived, geom = "bar", data = titanic, weight = Freq, 
+      facets = Sex~Class)
+```
+
+## Your Turn {data-background=#2a374c}
+
+Who uses their seatbelts?
+
+1. Use the brfss data to make a barplot for counts of seatbelt use (SEATBELT).
+*Seatbelt use (SEATBELT) is captured as 1 - Always, 2- Nearly Always, 3-Sometimes, 4- Seldom, 5-Never, 7-Don't know, 8-Never drive or ride in a car, 9-Refused, to BLANK-Missing.*
+2. Facet seatbelt use by gender - are there gender differences in usage?
