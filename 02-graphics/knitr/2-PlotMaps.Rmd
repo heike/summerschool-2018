@@ -81,7 +81,7 @@ We want to incorporate additional information into the plot:
 If a categorical variable is assigned as the fill color then `qplot` will assign different hues for each category. Let's load in a state regions dataset:
 
 ```{r, tidy= FALSE}
-statereg <- read.csv("https://raw.githubusercontent.com/heike/summerschool-2017/master/02-graphics/data/statereg.csv", stringsAsFactors = FALSE)
+statereg <- read.csv("https://raw.githubusercontent.com/heike/summerschool-2018/master/02-graphics/data/statereg.csv", stringsAsFactors = FALSE)
 
 head(statereg)
 ```
@@ -187,7 +187,7 @@ Use ggplot2 options to clean up your map!
 
 ```{r, fig.height=3, fig.width=7}
 library(ggthemes)
-qplot(long, lat, geom="polygon", data = states.map, group = group, fill = avg.qlrest2) + 
+qplot(long, lat, geom="polygon", data = states.sex.map, group = group, fill = avg.qlrest2, facets=~sex) + 
   coord_map() +  
   scale_fill_gradient2(midpoint=median(states.sex.stats$avg.qlrest2), low = "steelblue", high = "darkorange") + 
   theme_map()  +
