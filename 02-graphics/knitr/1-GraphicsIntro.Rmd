@@ -115,7 +115,7 @@ qplot(log(carat), log(price), geom = "point", data = diamonds,
 ```
 
 
-## Your Turn {data-background=#2a374c}
+## Your Turn 
 
 The Behavioral Risk Factor Surveillance System (BRFSS) is an annual survey provided by the Center for Disease Control (CDC) to assess behavioral and chronic diseases. The center surveys six individual-level behavioral health risk factors associated with the leading causes of premature mortality and morbidity among adults: 1) cigarette smoking, 2) alcohol use, 3) physical activity, 4) diet, 5) hypertension, and 6) safety belt use. 
 
@@ -123,7 +123,7 @@ A subset of the data concentrating on Iowa with records for 2012 is given at [ht
 
 A codebook describing the survey and a listing of all variables is available at [http://www.cdc.gov/brfss/annual_data/2012/pdf/CODEBOOK12_LLCP.pdf]().
 
-## Your Turn {data-background=#2a374c}
+## Your Turn 
 
 ```{r}
 iowa <- read.csv("https://raw.githubusercontent.com/heike/summerschool-2018/master/02-graphics/data/brfss-iowa-2012.csv")
@@ -159,7 +159,7 @@ Price histograms faceted by clarity
 qplot(price, geom = "histogram", data = diamonds, binwidth = 100, facets = .~clarity)
 ```
 
-## Your Turn {data-background=#2a374c}
+## Your Turn 
 
 1. Create a new variable in the brfss data calculating bmi: bmi = (weight in kg) / (height in m)^2
 2. Use qplot to create a histogram of bmi
@@ -196,7 +196,7 @@ qplot(clarity, log(price)/carat, geom = "boxplot", data = diamonds)
 
 
 
-## Your Turn {data-background=#2a374c}
+## Your Turn 
 
 Binge drinking - is defined as 5 or more alcoholic drinks
 for men or 4 or more drinks for women on one occasion.
@@ -232,7 +232,7 @@ qplot(Survived, geom = "bar", data = titanic, weight = Freq,
       facets = Sex~Class)
 ```
 
-## Your Turn {data-background=#2a374c}
+## Your Turn 
 
 Who uses their seatbelts?
 
