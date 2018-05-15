@@ -1,93 +1,90 @@
-### Graphics Intro
-#---------------------------------------------
-## Your Turn 1 - qplot
-	tips <- read.csv("http://heike.github.io/rwrks/02-r-graphics/data/tips.csv")
-	
-	# 1. Use qplot to buil a scatterplot of variables tips and total bill
-	
-	qplot(data = tips, x  = total_bill, y = tip)
-	
-	# 2. Use options within qplot to color points by smokers
-	
-	qplot(data = tips, x  = total_bill, y = tip, color = smoker)
-	
-	# 3. Clean up axis labels and add main plot title
-	
-	qplot(data = tips, x  = total_bill, y = tip, color = smoker,
-	xlab = "Total Bill ($)", ylab = "Tip ($)", 
-	main = "Tip left by patrons' total bill and smoking status")
+## ------------------------------------------------------------------------
+iowa <- read.csv("https://raw.githubusercontent.com/heike/summerschool-2018/master/02-graphics/data/brfss-iowa-2012.csv")
 
-## Your Turn 2 - histogram 
-	
-	# 1. Create a new variable in the tips data frame: rate = tip/total bill
-	
-	tips$rate <- tips$tip/tips$total_bill
-	
-	# 2. Use qplot to create a histogram of rate
-	
-	qplot(data = tips, x = rate)	
-	
-	# 3. Change the binwidth on that histogram to 0.05
-	
-	qplot(data = tips, x = rate, binwidth = 0.05)
-	
-	# 4. Facet this histogram by size of the group
-	
-	qplot(data = tips, x = rate, binwidth = 0.05, facets = ~ size)
+## ------------------------------------------------------------------------
+library(ggplot2)
+qplot(data = iowa, x = HTIN4, y = WTKG3)
 
-## Your Turn 3 - boxplots
+# use some alpha blending to alleviate over-plotting
+qplot(data = iowa, x = HTIN4, y = WTKG3, alpha = I(0.5))
 
-	# 1. Make side-by-side boxplots of tipping rate for males and females
-	
-	qplot(data = tips, x = sex, y = rate, geom = 'boxplot')
-	
-	# 2. Overlay jittered points for observed values onto this boxplot	
-	
-	qplot(data = tips, x = sex, y = rate, geom = c('boxplot', 'jitter'))
+# Generally there is a positive relationship, but it's not very strong, and there are lots of outliers on the upper end of the weight.
+# The stripes come from height being reported in inch. We can use jittering to add some random noise
 
-## Your Turn 4 - barplots
+qplot(data = iowa, x = HTIN4, y = WTKG3, alpha = I(0.5), geom="jitter")
 
-	# 1. Use the tips data to make a barplot for counts of smoking and 
-	# non smoking customers
-		
-	qplot(data = tips, x = smoker)
-	
-	# 2. Facet using day of week and time of day to view how smoking status 
-	# changes for different meal times
-	
-	qplot(data = tips, x = smoker, facets = day ~ time)
-	
-	
-	
-### Plot Maps
-#---------------------------------------------
 
-## Your turn 1 - health stats
-	states.health.stats <- read.csv("https://heike.github.io/rwrks/02-r-graphics/data/states.health.stats.csv")
-	
-	# Use left_join to combine child healthcare data with maps information. 
-	
-	library(maps)
-	library(dplyr)
-	states <- map_data("state")
-	states.health.map <- left_join(states, states.health.stats, 
-							by = c("region" = "state.name"))
-	
-	
-	# Use qplot to create a map of child healthcare undercoverage rate by state
-	
-	qplot(data = states.health.map, x = long, y = lat, geom = 'polygon',
-			group = group, fill = no.coverage) + coord_map()
+## ------------------------------------------------------------------------
+qplot(data = iowa, x = HTIN4, y = WTKG3/100, colour = SEX)
 
-## Your turn 2 - cleaned up map
+# the colour is strange - let's change the SEX variable to a factor permanently:
+iowa$SEX <- factor(iowa$SEX)
 
-	qplot(data = states.health.map, x = long, y = lat, geom = 'polygon',
-			group = group, fill = no.coverage) + coord_map() + 
-	scale_fill_gradient2(limits = c(0, .2), low = 'white', high = 'red') + 
-	ggtitle("Health Insurance in the U.S.\nWhich states have the highest rates of undercovered children?")	+ theme_minimal() + 
-	theme(panel.grid = element_blank(), axis.text = element_blank(),
-	axis.title = element_blank())	
-	
+qplot(data=iowa, x = HTIN4, y = WTKG3, colour = SEX)
+
+## ------------------------------------------------------------------------
+qplot(data = iowa, x = HTIN4, y = WTKG3, colour = SEX) +
+  ggtitle("Relationship of weight and height among the Iowa population in 2012") +
+  xlab("Height in inch") +
+  ylab("Weight in kg")
+
+## ------------------------------------------------------------------------
+iowa$bmi <- (iowa$WTKG3/100)/(iowa$HTIN4*2.54/100)^2
+summary(iowa$bmi)
+
+## ------------------------------------------------------------------------
+qplot(data = iowa, x = bmi, geom="histogram") 
+
+## ------------------------------------------------------------------------
+qplot(data = iowa, x = bmi, geom="histogram", binwidth=1) 
+
+## ------------------------------------------------------------------------
+qplot(data = iowa, x = bmi, geom="histogram", facets = SEX~.)
+
+## ------------------------------------------------------------------------
+qplot(data = iowa, x = SEX, y = DRNK3GE5, geom="boxplot") 
+
+## ------------------------------------------------------------------------
+qplot(data = subset(iowa, DRNK3GE5<77), x = SEX, y = DRNK3GE5, geom="boxplot") 
+
+## ------------------------------------------------------------------------
+qplot(data = subset(iowa, DRNK3GE5<77), x = SEX, y = DRNK3GE5, geom="boxplot") +
+  geom_jitter()
+
+## ------------------------------------------------------------------------
+qplot(data = iowa, x = SEATBELT, geom="bar")
+qplot(data = iowa, x = factor(SEATBELT), geom="bar")
+
+## ------------------------------------------------------------------------
+qplot(data = iowa, x = factor(SEATBELT), geom="bar", facets=~SEX)
+# proportion of women always using a seatbelt is higher than proportion of men.
+qplot(data = iowa, x = factor(SEATBELT), geom="bar", fill=factor(SEX))
+
+qplot(data = iowa, x = SEX, geom="bar", fill=SEATBELT==1)
+
+
+## ------------------------------------------------------------------------
+library(ggplot2)
+library(dplyr)
+states <- map_data("state")
+
+states.sex.stats <- read.csv("http://heike.github.io/rwrks/02-r-graphics/data/states.sex.stats.csv", stringsAsFactors = FALSE)
+states.sex.map <- left_join(states, states.sex.stats, by = c("region" = "state.name"))
+
+qplot(long, lat, geom = "polygon", data = states.sex.map, 
+      group = group, fill = avg.drnk) + coord_map() + 
+  facet_grid(. ~ sex)
+
+## ------------------------------------------------------------------------
+qplot(long, lat, geom = "polygon", data = states.sex.map, 
+      group = group, fill = avg.drnk) + coord_map() + 
+  facet_grid(. ~ sex) +
+  scale_fill_gradient2(midpoint=median(states.sex.stats$avg.drnk), low = "steelblue", high = "darkorange") + 
+  ggthemes::theme_map()  +
+  ggtitle("Map of Average Number of Drinks by State") +
+  theme(legend.position="right")
+
+
 ### Layers
 #--------------------------------------------
 
