@@ -161,7 +161,7 @@ qplot(long, lat, geom = "polygon", data = states.sex.map,
     facet_grid(. ~ sex)
 ```
 
-## Your Turn {data-background=#2a374c}
+## Your Turn 
 
 Draw a map for the average number of alcoholic drinks per day for each gender
 
@@ -195,7 +195,7 @@ qplot(long, lat, geom="polygon", data = states.sex.map, group = group, fill = av
   theme(legend.position="right")
 ```
 
-## Your Turn {data-background=#2a374c}
+## Your Turn 
 
 Use options to polish the look of the average number of drinks by state by state!
 

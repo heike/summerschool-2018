@@ -114,3 +114,64 @@ qplot(data = iowa, x = factor(SEATBELT), geom="bar", fill=factor(SEX))
 qplot(data = iowa, x = SEX, geom="bar", fill=SEATBELT==1)
 
 ```
+
+
+# Plot-Maps
+
+Draw a map for the average number of alcoholic drinks per day for each gender
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+states <- map_data("state")
+
+states.sex.stats <- read.csv("http://heike.github.io/rwrks/02-r-graphics/data/states.sex.stats.csv", stringsAsFactors = FALSE)
+states.sex.map <- left_join(states, states.sex.stats, by = c("region" = "state.name"))
+
+qplot(long, lat, geom = "polygon", data = states.sex.map, 
+      group = group, fill = avg.drnk) + coord_map() + 
+    facet_grid(. ~ sex)
+```
+
+Use options to polish the look of the average number of drinks by state by state!
+
+```{r}
+qplot(long, lat, geom = "polygon", data = states.sex.map, 
+      group = group, fill = avg.drnk) + coord_map() + 
+    facet_grid(. ~ sex) +
+  scale_fill_gradient2(midpoint=median(states.sex.stats$avg.drnk), low = "steelblue", high = "darkorange") + 
+  ggthemes::theme_map()  +
+  ggtitle("Map of Average Number of Drinks by State") +
+  theme(legend.position="right")
+```
+
+## Layers
+
+Find the `ggplot()` statement that creates this plot:
+
+```{r, fig.height=4, fig.width=7, warning=FALSE}
+load("../data/noaa.rdata")
+ggplot(aes(x = Depth, y = Temperature, colour = callSign), 
+       data = floats) + 
+  geom_point()
+```
+
+1. Read in the animal.csv data:
+
+```{r}
+animal <- read.csv("https://raw.githubusercontent.com/heike/summerschool-2018/master/02-graphics/data/animal.csv")
+```
+
+2. Plot the location of animal sightings on a map of the region
+
+```{r}
+
+ggplot() +
+    geom_path(data = states, aes(x = long, y = lat, group = group)) +   geom_point(data = animal, aes(x = Longitude, y = Latitude)) +   
+    geom_point(aes(x, y), shape = "x", size = 5, data = rig) + 
+    geom_text(aes(x, y), label = "BP Oil Rig", size = 5, data = rig, hjust = -0.1) + 
+    xlim(c(-91, -80)) + 
+    ylim(c(22, 32)) + coord_map()
+
+```
