@@ -317,7 +317,7 @@ id <- (bill > 40 & rate < .10)
 tips[id,]
 ```
 
-## Your Turn {data-background=#2a374c}
+## Your Turn 
 
 1. Read up on the dataset `diamonds` (`?diamonds`) in the `ggplot2` package
 2. Plot price by carat (use `qplot` - go back to the motivating example for help with the syntax)
